@@ -17,7 +17,7 @@ import { SwitchPropsType } from './PropsType'
 import SwitchStyles from './style/index'
 
 const AnimatedView = Animated.createAnimatedComponent(AntmView)
-const Switch = ({
+const AntmSwitch = ({
   prefixCls = 'switch',
   checked,
   defaultChecked,
@@ -201,6 +201,6 @@ const Switch = ({
   )
 }
 
-Switch.displayName = 'Switch'
+AntmSwitch.displayName = 'AntmSwitch'
 
-export default Switch
+export default AntmSwitch
