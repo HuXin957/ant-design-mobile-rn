@@ -2,18 +2,18 @@ import classNames from 'classnames'
 import useMergedState from 'rc-util/lib/hooks/useMergedState'
 import * as React from 'react'
 import {
-  TouchableNativeFeedback,
-  View,
   Animated,
   Easing,
   Platform,
+  TouchableNativeFeedback,
+  View,
 } from 'react-native'
-import AntmView from '../view/index'
 import RNActivityIndicator from '../activity-indicator'
+import { WithTheme } from '../style'
+import AntmView from '../view/index'
 import devWarning from '../_util/devWarning'
 import { useAnimatedTiming } from '../_util/hooks/useAnimations'
 import { SwitchPropsType } from './PropsType'
-import { WithTheme } from '../style'
 import SwitchStyles from './style/index'
 
 const AnimatedView = Animated.createAnimatedComponent(AntmView)
@@ -38,7 +38,7 @@ const Switch = ({
   // Compatible with old code : checked without onChange was alse onControlled
   const checkedRef = React.useRef<undefined | boolean>()
   if (checkedRef.current === undefined) {
-    checkedRef.current = checked
+    checkedRef.current = defaultChecked || checked
   }
   const [innerChecked, setInnerChecked] = useMergedState<boolean>(false, {
     value: checkedRef.current,
