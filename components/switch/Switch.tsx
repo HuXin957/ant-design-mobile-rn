@@ -38,7 +38,7 @@ const Switch = ({
   // Compatible with old code : checked without onChange was alse onControlled
   const checkedRef = React.useRef<undefined | boolean>()
   if (checkedRef.current === undefined) {
-    checkedRef.current = defaultChecked || checked
+    checkedRef.current = checked ?? defaultChecked
   }
   const [innerChecked, setInnerChecked] = useMergedState<boolean>(false, {
     value: checkedRef.current,
