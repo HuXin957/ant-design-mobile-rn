@@ -1,13 +1,20 @@
-import React from 'react'
+import classNames from 'classnames'
+import useMergedState from 'rc-util/lib/hooks/useMergedState'
+import * as React from 'react'
 import {
+  Animated,
+  Easing,
+  Platform,
+  Pressable,
   StyleProp,
-  Text,
   TextStyle,
-  TouchableWithoutFeedback,
+  TouchableNativeFeedback,
   View,
 } from 'react-native'
-import Icon from '../icon'
 import { WithTheme, WithThemeStyles } from '../style'
+import AntmView from '../view/index'
+import devWarning from '../_util/devWarning'
+import { useAnimatedTiming } from '../_util/hooks/useAnimations'
 import { CheckboxPropsType } from './PropsType'
 import CheckboxStyles, { CheckboxStyle } from './style/index'
 
@@ -15,87 +22,150 @@ export interface CheckboxProps
   extends CheckboxPropsType,
     WithThemeStyles<CheckboxStyle> {
   style?: StyleProp<TextStyle>
+  prefixCls?: string
+  children?: React.ReactNode
 }
 
-export default class Checkbox extends React.Component<CheckboxProps, any> {
-  static CheckboxItem: any
-  static AgreeItem: any
+const AntmCheckbox = ({
+  prefixCls = 'checkbox',
+  children,
+  checked,
+  defaultChecked,
+  disabled,
+  onChange,
+  ...restProps
+}: CheckboxProps) => {
+  devWarning(
+    'checked' in restProps || !('value' in restProps),
+    'Checkbox',
+    '`value` is not a valid prop, do you mean `checked`?',
+  )
 
-  constructor(props: CheckboxProps, context: any) {
-    super(props, context)
-
-    this.state = {
-      checked: props.checked || props.defaultChecked || false,
-    }
+  const checkedRef = React.useRef<undefined | boolean>()
+  if (checkedRef.current === undefined) {
+    checkedRef.current = checked
   }
 
-  UNSAFE_componentWillReceiveProps(nextProps: CheckboxProps): void {
-    if (typeof nextProps.checked === 'boolean') {
-      this.setState({
-        checked: !!nextProps.checked,
+  const [innerChecked, setInnerChecked] = useMergedState<boolean>(false, {
+    value: checkedRef.current,
+    defaultValue: defaultChecked,
+  })
+
+  const [animatedValue, animate] = useAnimatedTiming()
+  const transitionOpacity = {
+    opacity: animatedValue.interpolate({
+      inputRange: [0, 1],
+      outputRange: [0, 1],
+    }),
+  }
+  const transitionTransform = {
+    transform: [
+      { rotate: '45deg' },
+      {
+        scale: animatedValue.interpolate({
+          inputRange: [0, 1],
+          outputRange: [0, 1],
+        }),
+      },
+    ],
+  }
+
+  //initial animate
+  React.useEffect(() => {
+    if (checkedRef.current) {
+      animate({ duration: 300 })
+    } else {
+      animate({ duration: 300, toValue: 0 })
+    }
+  }, [animate, checkedRef])
+
+  function triggerChange(newChecked: boolean) {
+    let mergedChecked = innerChecked
+
+    if (!disabled) {
+      mergedChecked = newChecked
+      checkedRef.current = mergedChecked
+      setInnerChecked(mergedChecked)
+      onChange?.({
+        target: {
+          checked: mergedChecked,
+        },
       })
     }
+
+    return mergedChecked
+  }
+  const onInternalClick = () => {
+    const ret = triggerChange(!innerChecked)
+    animate({
+      toValue: ret ? 1 : 0,
+      duration: 300,
+      easing: Easing.bezier(0.68, -0.55, 0.27, 1.55),
+    })
   }
 
-  handleClick = () => {
-    if (this.props.disabled) {
-      return
-    }
-    const checked = !this.state.checked
-    if (!(typeof this.props.checked === 'boolean')) {
-      this.setState({
-        checked,
-      })
-    }
-    if (this.props.onChange) {
-      this.props.onChange({ target: { checked } })
-    }
-  }
+  return (
+    <WithTheme themeStyles={CheckboxStyles}>
+      {(styles) => {
+        const antd_checkbox = classNames(`${prefixCls}`, {
+          [`${prefixCls}_checked`]: innerChecked,
+          [`${prefixCls}_disabled`]: disabled,
+        })
+          .split(' ')
+          .map((a) => styles[a])
 
-  render() {
-    const { style, disabled, children } = this.props
-    const checked = this.state.checked
-    return (
-      <WithTheme themeStyles={CheckboxStyles} styles={this.props.styles}>
-        {(styles, theme) => {
-          let icon
-          if (checked) {
-            icon = disabled ? (
-              <Icon name="check-square" style={[styles.icon, style]} />
-            ) : (
-              <Icon
-                name="check-square"
-                color={theme.brand_primary}
-                style={[styles.icon, style]}
-              />
-            )
-          } else {
-            icon = disabled ? (
-              <Icon name="border" style={[styles.icon, style]} />
-            ) : (
-              <Icon
-                name="border"
-                color={theme.brand_primary}
-                style={[styles.icon, style]}
-              />
-            )
-          }
+        const antd_checkbox_inner = classNames(`${prefixCls}_inner`, {
+          [`${prefixCls}_inner_disabled`]: disabled,
+        })
+          .split(' ')
+          .map((a) => styles[a])
 
-          return (
-            <TouchableWithoutFeedback onPress={this.handleClick}>
-              <View style={[styles.wrapper]}>
-                {icon}
-                {typeof children === 'string' ? (
-                  // tslint:disable-next-line:jsx-no-multiline-js
-                  <Text style={styles.iconRight}>{this.props.children}</Text>
-                ) : (
-                  children
-                )}
-              </View>
-            </TouchableWithoutFeedback>
-          )
-        }}
-      </WithTheme>
-    )
-  }
+        const antd_checkbox_inner_after = classNames(
+          `${prefixCls}_inner_after`,
+          {
+            [`${prefixCls}_inner_after_disabled`]: disabled,
+          },
+        )
+          .split(' ')
+          .map((a) => styles[a])
+
+        const Color = innerChecked
+          ? styles.checkbox_checked?.borderColor
+          : styles.checkbox?.borderColor
+        return (
+          <View style={styles[`${prefixCls}_wrapper`]}>
+            <View style={styles.checkbox_wave}>
+              <TouchableNativeFeedback
+                background={
+                  Platform.Version >= 21
+                    ? TouchableNativeFeedback.Ripple(Color || '', true, 13)
+                    : TouchableNativeFeedback.SelectableBackground()
+                }
+                useForeground={true}
+                disabled={disabled}
+                onPress={onInternalClick}>
+                <View style={antd_checkbox}>
+                  <Animated.View
+                    style={[antd_checkbox_inner, transitionOpacity]}
+                  />
+                  <Animated.View
+                    style={[antd_checkbox_inner_after, transitionTransform]}
+                  />
+                </View>
+              </TouchableNativeFeedback>
+            </View>
+            <Pressable disabled={disabled} onPress={onInternalClick}>
+              <AntmView style={styles[`${prefixCls}_label`]}>
+                {children}
+              </AntmView>
+            </Pressable>
+          </View>
+        )
+      }}
+    </WithTheme>
+  )
 }
+
+AntmCheckbox.displayName = 'AntmCheckbox'
+
+export default AntmCheckbox
