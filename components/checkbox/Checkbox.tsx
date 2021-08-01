@@ -26,15 +26,23 @@ export interface CheckboxProps
   children?: React.ReactNode
 }
 
-const AntmCheckbox = ({
-  prefixCls = 'checkbox',
-  children,
-  checked,
-  defaultChecked,
-  disabled,
-  onChange,
-  ...restProps
-}: CheckboxProps) => {
+//TODO: ref interface
+export interface RefCheckboxProps {
+  onPress: () => void
+}
+
+const InternalCheckbox = (
+  {
+    prefixCls = 'checkbox',
+    styles,
+    children,
+    defaultChecked,
+    disabled,
+    onChange,
+    ...restProps
+  }: CheckboxProps,
+  ref: React.Ref<any>,
+) => {
   devWarning(
     'checked' in restProps || !('value' in restProps),
     'Checkbox',
@@ -43,7 +51,7 @@ const AntmCheckbox = ({
 
   const checkedRef = React.useRef<undefined | boolean>()
   if (checkedRef.current === undefined) {
-    checkedRef.current = checked
+    checkedRef.current = restProps.checked ?? defaultChecked
   }
 
   const [innerChecked, setInnerChecked] = useMergedState<boolean>(false, {
@@ -104,68 +112,78 @@ const AntmCheckbox = ({
     })
   }
 
-  return (
-    <WithTheme themeStyles={CheckboxStyles}>
-      {(styles) => {
-        const antd_checkbox = classNames(`${prefixCls}`, {
-          [`${prefixCls}_checked`]: innerChecked,
-          [`${prefixCls}_disabled`]: disabled,
-        })
-          .split(' ')
-          .map((a) => styles[a])
+  class Checkbox extends React.Component {
+    onPress = () => {
+      onInternalClick()
+    }
+    render() {
+      return (
+        <WithTheme themeStyles={CheckboxStyles} styles={styles}>
+          {(_styles) => {
+            const antd_checkbox = classNames(`${prefixCls}`, {
+              [`${prefixCls}_checked`]: innerChecked,
+              [`${prefixCls}_disabled`]: disabled,
+            })
+              .split(' ')
+              .map((a) => _styles[a])
 
-        const antd_checkbox_inner = classNames(`${prefixCls}_inner`, {
-          [`${prefixCls}_inner_disabled`]: disabled,
-        })
-          .split(' ')
-          .map((a) => styles[a])
+            const antd_checkbox_inner = classNames(`${prefixCls}_inner`, {
+              [`${prefixCls}_inner_disabled`]: disabled,
+            })
+              .split(' ')
+              .map((a) => _styles[a])
 
-        const antd_checkbox_inner_after = classNames(
-          `${prefixCls}_inner_after`,
-          {
-            [`${prefixCls}_inner_after_disabled`]: disabled,
-          },
-        )
-          .split(' ')
-          .map((a) => styles[a])
+            const antd_checkbox_inner_after = classNames(
+              `${prefixCls}_inner_after`,
+              {
+                [`${prefixCls}_inner_after_disabled`]: disabled,
+              },
+            )
+              .split(' ')
+              .map((a) => _styles[a])
 
-        const Color = innerChecked
-          ? styles.checkbox_checked?.borderColor
-          : styles.checkbox?.borderColor
-        return (
-          <View style={styles[`${prefixCls}_wrapper`]}>
-            <View style={styles.checkbox_wave}>
-              <TouchableNativeFeedback
-                background={
-                  Platform.Version >= 21
-                    ? TouchableNativeFeedback.Ripple(Color || '', true, 13)
-                    : TouchableNativeFeedback.SelectableBackground()
-                }
-                useForeground={true}
-                disabled={disabled}
-                onPress={onInternalClick}>
-                <View style={antd_checkbox}>
-                  <Animated.View
-                    style={[antd_checkbox_inner, transitionOpacity]}
-                  />
-                  <Animated.View
-                    style={[antd_checkbox_inner_after, transitionTransform]}
-                  />
+            const Color = innerChecked
+              ? _styles.checkbox_checked?.borderColor
+              : _styles.checkbox?.borderColor
+            return (
+              <View style={_styles[`${prefixCls}_wrapper`]}>
+                <View style={_styles.checkbox_wave}>
+                  <TouchableNativeFeedback
+                    background={
+                      Platform.Version >= 21
+                        ? TouchableNativeFeedback.Ripple(Color || '', true, 13)
+                        : TouchableNativeFeedback.SelectableBackground()
+                    }
+                    useForeground={true}
+                    disabled={disabled}
+                    onPress={this.onPress}>
+                    <View style={antd_checkbox}>
+                      <Animated.View
+                        style={[antd_checkbox_inner, transitionOpacity]}
+                      />
+                      <Animated.View
+                        style={[antd_checkbox_inner_after, transitionTransform]}
+                      />
+                    </View>
+                  </TouchableNativeFeedback>
                 </View>
-              </TouchableNativeFeedback>
-            </View>
-            <Pressable disabled={disabled} onPress={onInternalClick}>
-              <AntmView style={styles[`${prefixCls}_label`]}>
-                {children}
-              </AntmView>
-            </Pressable>
-          </View>
-        )
-      }}
-    </WithTheme>
-  )
+                <Pressable disabled={disabled} onPress={this.onPress}>
+                  <AntmView style={_styles[`${prefixCls}_label`]}>
+                    {children}
+                  </AntmView>
+                </Pressable>
+              </View>
+            )
+          }}
+        </WithTheme>
+      )
+    }
+  }
+
+  return <Checkbox ref={ref} {...restProps} />
 }
 
+const AntmCheckbox = React.forwardRef(InternalCheckbox)
 AntmCheckbox.displayName = 'AntmCheckbox'
 
 export default AntmCheckbox

@@ -1,10 +1,10 @@
 import React from 'react'
 import { StyleProp, TextStyle, ViewStyle } from 'react-native'
 import List from '../list/index'
-import { WithTheme, WithThemeStyles } from '../style'
-import Checkbox from './Checkbox'
+import { WithThemeStyles } from '../style'
+import Checkbox, { RefCheckboxProps } from './Checkbox'
 import { CheckboxItemPropsType } from './PropsType'
-import CheckboxItemStyles, { CheckboxStyle } from './style/index'
+import { CheckboxStyle } from './style/index'
 
 const ListItem = List.Item
 
@@ -15,14 +15,12 @@ export interface CheckboxItemProps
   style?: StyleProp<ViewStyle>
 }
 
-export default class CheckboxItem extends React.Component<
-  CheckboxItemProps,
-  any
-> {
-  checkbox: Checkbox | null
+export default class CheckboxItem extends React.Component<CheckboxItemProps> {
+  checkbox: RefCheckboxProps
+
   handleClick = () => {
     if (this.checkbox) {
-      this.checkbox.handleClick()
+      this.checkbox.onPress()
     }
     if (this.props.onPress) {
       this.props.onPress()
@@ -32,7 +30,6 @@ export default class CheckboxItem extends React.Component<
   render() {
     const {
       style,
-      checkboxStyle,
       defaultChecked,
       checked,
       disabled,
@@ -42,18 +39,13 @@ export default class CheckboxItem extends React.Component<
     } = this.props
 
     const thumbNode = (
-      <WithTheme styles={this.props.styles} themeStyles={CheckboxItemStyles}>
-        {(styles) => (
-          <Checkbox
-            ref={(ref) => (this.checkbox = ref)}
-            style={[styles.checkboxItemCheckbox, checkboxStyle]}
-            defaultChecked={defaultChecked}
-            checked={checked}
-            onChange={onChange}
-            disabled={disabled}
-          />
-        )}
-      </WithTheme>
+      <Checkbox
+        ref={(ref: RefCheckboxProps) => (this.checkbox = ref)}
+        defaultChecked={defaultChecked}
+        checked={checked}
+        onChange={onChange}
+        disabled={disabled}
+      />
     )
     return (
       <ListItem
