@@ -24,6 +24,7 @@ export interface CheckboxProps
   style?: StyleProp<TextStyle>
   prefixCls?: string
   children?: React.ReactNode
+  indeterminate?: boolean
 }
 
 //TODO: ref interface
@@ -39,6 +40,7 @@ const InternalCheckbox = (
     defaultChecked,
     disabled,
     onChange,
+    indeterminate,
     ...restProps
   }: CheckboxProps,
   ref: React.Ref<any>,
@@ -49,13 +51,8 @@ const InternalCheckbox = (
     '`value` is not a valid prop, do you mean `checked`?',
   )
 
-  const checkedRef = React.useRef<undefined | boolean>()
-  if (checkedRef.current === undefined) {
-    checkedRef.current = restProps.checked ?? defaultChecked
-  }
-
   const [innerChecked, setInnerChecked] = useMergedState<boolean>(false, {
-    value: checkedRef.current,
+    value: restProps.checked,
     defaultValue: defaultChecked,
   })
 
@@ -71,8 +68,8 @@ const InternalCheckbox = (
       { rotate: '45deg' },
       {
         scale: animatedValue.interpolate({
-          inputRange: [0, 1],
-          outputRange: [0, 1],
+          inputRange: [0, 0.8, 1],
+          outputRange: [0, 1.2, 1], // Some device's bezier doest work
         }),
       },
     ],
@@ -80,19 +77,18 @@ const InternalCheckbox = (
 
   //initial animate
   React.useEffect(() => {
-    if (checkedRef.current) {
+    if (innerChecked) {
       animate({ duration: 300 })
     } else {
       animate({ duration: 300, toValue: 0 })
     }
-  }, [animate, checkedRef])
+  }, [animate, innerChecked])
 
   function triggerChange(newChecked: boolean) {
     let mergedChecked = innerChecked
 
     if (!disabled) {
       mergedChecked = newChecked
-      checkedRef.current = mergedChecked
       setInnerChecked(mergedChecked)
       onChange?.({
         target: {
@@ -128,17 +124,17 @@ const InternalCheckbox = (
               .map((a) => _styles[a])
 
             const antd_checkbox_inner = classNames(`${prefixCls}_inner`, {
+              [`${prefixCls}_inner_indeterminate`]: indeterminate,
               [`${prefixCls}_inner_disabled`]: disabled,
             })
               .split(' ')
               .map((a) => _styles[a])
 
-            const antd_checkbox_inner_after = classNames(
-              `${prefixCls}_inner_after`,
-              {
-                [`${prefixCls}_inner_after_disabled`]: disabled,
-              },
-            )
+            const antd_checkbox_inner_after = classNames(undefined, {
+              [`${prefixCls}_inner_after`]: !indeterminate,
+              [`${prefixCls}_inner_after_indeterminate`]: indeterminate,
+              [`${prefixCls}_inner_after_disabled`]: disabled,
+            })
               .split(' ')
               .map((a) => _styles[a])
 
@@ -162,7 +158,7 @@ const InternalCheckbox = (
                         style={[antd_checkbox_inner, transitionOpacity]}
                       />
                       <Animated.View
-                        style={[antd_checkbox_inner_after, transitionTransform]}
+                        style={[transitionTransform, antd_checkbox_inner_after]}
                       />
                     </View>
                   </TouchableNativeFeedback>

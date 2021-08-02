@@ -12,6 +12,8 @@ export interface CheckboxStyle {
   checkbox_inner_after: ViewStyle
   checkbox_inner_after_disabled: ViewStyle
   checkbox_label: ViewStyle
+  checkbox_inner_indeterminate: ViewStyle
+  checkbox_inner_after_indeterminate: ViewStyle
 }
 
 export default (theme: Theme) =>
@@ -56,13 +58,16 @@ export default (theme: Theme) =>
       height: '100%',
       backgroundColor: theme.checkbox_fill,
     },
+    checkbox_inner_indeterminate: {
+      backgroundColor: 'transparent',
+    },
     checkbox_inner_disabled: {
       backgroundColor: theme.checkbox_fill_disabled,
     },
 
     // ==========inner::after============
     checkbox_inner_after: {
-      transform: [{ rotate: '45deg' }],
+      // transform: [{ rotate: '45deg' }],
       position: 'absolute',
       width: 6,
       height: 9,
@@ -71,6 +76,14 @@ export default (theme: Theme) =>
       borderColor: '#ffffff',
       borderTopWidth: 0,
       borderLeftWidth: 0,
+    },
+    // 半选状态样式
+    checkbox_inner_after_indeterminate: {
+      transform: [{ rotate: '0deg' }],
+      position: 'absolute',
+      width: 8,
+      height: 8,
+      backgroundColor: theme.checkbox_fill,
     },
     checkbox_inner_after_disabled: {
       borderColor: theme.checkbox_border_disabled,
