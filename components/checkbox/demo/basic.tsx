@@ -42,7 +42,9 @@ export default class BasicCheckboxExample extends React.Component<any, any> {
     return (
       <ScrollView>
         <List renderHeader="基本用法">
-          <List.Item thumb={<Checkbox>Checkbox</Checkbox>} />
+          <List.Item
+            thumb={<Checkbox onChange={this.onChange}>Checkbox</Checkbox>}
+          />
         </List>
         <List renderHeader="不可用">
           <List.Item thumb={<Checkbox defaultChecked={false} disabled />} />

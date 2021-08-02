@@ -15,7 +15,7 @@ export interface CheckboxItemProps
   style?: StyleProp<ViewStyle>
 }
 
-export default class CheckboxItem extends React.Component<CheckboxItemProps> {
+export default class CheckboxItem extends React.PureComponent<CheckboxItemProps> {
   checkbox: RefCheckboxProps
 
   handleClick = () => {
@@ -28,23 +28,13 @@ export default class CheckboxItem extends React.Component<CheckboxItemProps> {
   }
 
   render() {
-    const {
-      style,
-      defaultChecked,
-      checked,
-      disabled,
-      children,
-      extra,
-      onChange,
-    } = this.props
+    const { style, disabled, children, extra, ...restProps } = this.props
 
     const thumbNode = (
       <Checkbox
         ref={(ref: RefCheckboxProps) => (this.checkbox = ref)}
-        defaultChecked={defaultChecked}
-        checked={checked}
-        onChange={onChange}
         disabled={disabled}
+        {...restProps}
       />
     )
     return (

@@ -1,5 +1,4 @@
 import classNames from 'classnames'
-import useMergedState from 'rc-util/lib/hooks/useMergedState'
 import * as React from 'react'
 import {
   Animated,
@@ -51,10 +50,9 @@ const InternalCheckbox = (
     '`value` is not a valid prop, do you mean `checked`?',
   )
 
-  const [innerChecked, setInnerChecked] = useMergedState<boolean>(false, {
-    value: restProps.checked,
-    defaultValue: defaultChecked,
-  })
+  const [innerChecked, setInnerChecked] = React.useState<boolean>(
+    restProps.checked ?? (defaultChecked || false),
+  )
 
   const [animatedValue, animate] = useAnimatedTiming()
   const transitionOpacity = {
@@ -68,20 +66,20 @@ const InternalCheckbox = (
       { rotate: '45deg' },
       {
         scale: animatedValue.interpolate({
-          inputRange: [0, 0.8, 1],
-          outputRange: [0, 1.2, 1], // Some device's bezier doest work
+          inputRange: [0, 1],
+          outputRange: [0, 1],
         }),
       },
     ],
   }
 
-  //initial animate
+  //initial animate or receive props
   React.useEffect(() => {
-    if (innerChecked) {
-      animate({ duration: 300 })
-    } else {
-      animate({ duration: 300, toValue: 0 })
-    }
+    animate({
+      toValue: innerChecked ? 1 : 0,
+      duration: 300,
+      easing: Easing.bezier(0.68, -0.55, 0.27, 1.55),
+    })
   }, [animate, innerChecked])
 
   function triggerChange(newChecked: boolean) {
@@ -100,12 +98,7 @@ const InternalCheckbox = (
     return mergedChecked
   }
   const onInternalClick = () => {
-    const ret = triggerChange(!innerChecked)
-    animate({
-      toValue: ret ? 1 : 0,
-      duration: 300,
-      easing: Easing.bezier(0.68, -0.55, 0.27, 1.55),
-    })
+    triggerChange(!innerChecked)
   }
 
   class Checkbox extends React.Component {
