@@ -1,10 +1,12 @@
+import { OnChangeParams } from '../checkbox/PropsType'
+
 export interface RadioPropsType {
   defaultChecked?: boolean
   checked?: boolean
   disabled?: boolean
-  onChange?: (e: { target: { checked: boolean } }) => void
+  onChange?: (_e: OnChangeParams) => void
   name?: string
-  wrapLabel?: boolean
+  value?: any
 }
 
 export interface RadioItemPropsType extends RadioPropsType {

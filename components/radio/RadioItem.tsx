@@ -1,16 +1,18 @@
 import React from 'react'
 import { ImageStyle, StyleProp, Text, View, ViewStyle } from 'react-native'
+import { RefCheckboxProps } from '../checkbox/Checkbox'
+import { CheckboxStyle } from '../checkbox/style'
 import List from '../list/index'
 import { WithTheme, WithThemeStyles } from '../style'
 import { RadioItemPropsType } from './PropsType'
 import Radio from './Radio'
-import RadioItemStyles, { RadioStyle } from './style/index'
+import RadioItemStyles from './style/index'
 
 const ListItem = List.Item
 
 export interface RadioItemNativeProps
   extends RadioItemPropsType,
-    WithThemeStyles<RadioStyle> {
+    WithThemeStyles<CheckboxStyle> {
   style?: StyleProp<ViewStyle>
   radioStyle?: StyleProp<ImageStyle>
 }
@@ -19,24 +21,17 @@ export default class RadioItem extends React.Component<
   RadioItemNativeProps,
   any
 > {
-  radio: Radio | null
+  radio: RefCheckboxProps
 
   handleClick = () => {
     if (this.radio) {
-      this.radio.handleClick()
+      this.radio.onPress()
     }
   }
 
   render() {
-    const {
-      style,
-      radioStyle,
-      defaultChecked,
-      checked,
-      disabled,
-      children,
-      onChange,
-    } = this.props
+    const { style, defaultChecked, checked, disabled, children, onChange } =
+      this.props
 
     return (
       <WithTheme styles={this.props.styles} themeStyles={RadioItemStyles}>
@@ -58,8 +53,7 @@ export default class RadioItem extends React.Component<
 
           const radioEl = (
             <Radio
-              ref={(ref) => (this.radio = ref)}
-              style={radioStyle}
+              ref={(ref: RefCheckboxProps) => (this.radio = ref)}
               defaultChecked={defaultChecked}
               checked={checked}
               onChange={onChange}
