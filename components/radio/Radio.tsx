@@ -1,90 +1,30 @@
-import React from 'react'
-import {
-  StyleProp,
-  Text,
-  TextStyle,
-  TouchableWithoutFeedback,
-  View,
-} from 'react-native'
-import Icon from '../icon'
-import { WithTheme, WithThemeStyles } from '../style'
-import variables from '../style/themes/default'
+import * as React from 'react'
+import Checkbox from '../checkbox'
+import { CheckboxStyle } from '../checkbox/style'
+import { WithThemeStyles } from '../style'
+import devWarning from '../_util/devWarning'
 import { RadioPropsType } from './PropsType'
-import RadioStyles, { RadioStyle } from './style/index'
 
-export interface RadioNativeProps
+export interface RadioProps
   extends RadioPropsType,
-    WithThemeStyles<RadioStyle> {
-  style?: StyleProp<TextStyle>
+    WithThemeStyles<CheckboxStyle> {
+  prefixCls?: string
+  children?: React.ReactNode
+  indeterminate?: boolean
 }
 
-export default class Radio extends React.Component<RadioNativeProps, any> {
-  static RadioItem: any
+const InternalRadio = (props: RadioProps) => {
+  devWarning(
+    !('optionType' in props),
+    'Radio',
+    '`optionType` is only support in Radio.Group.',
+  )
 
-  constructor(props: RadioNativeProps, context: any) {
-    super(props, context)
-
-    this.state = {
-      checked: props.checked || props.defaultChecked || false,
-    }
-  }
-
-  UNSAFE_componentWillReceiveProps(nextProps: RadioNativeProps): void {
-    if ('checked' in nextProps) {
-      this.setState({
-        checked: !!nextProps.checked,
-      })
-    }
-  }
-
-  handleClick = () => {
-    if (this.props.disabled) {
-      return
-    }
-    if (!('checked' in this.props)) {
-      this.setState({
-        checked: true,
-      })
-    }
-    if (this.props.onChange) {
-      this.props.onChange({ target: { checked: true } })
-    }
-  }
-
-  render() {
-    const { style, disabled, children } = this.props
-
-    return (
-      <WithTheme styles={this.props.styles} themeStyles={RadioStyles}>
-        {(styles) => {
-          const checked = this.state.checked
-          let icon
-          if (checked) {
-            icon = disabled ? (
-              <Icon name="check" style={[styles.icon, style]} />
-            ) : (
-              <Icon
-                name="check"
-                color={variables.brand_primary}
-                style={[styles.icon, style]}
-              />
-            )
-          }
-          return (
-            <TouchableWithoutFeedback onPress={this.handleClick}>
-              <View style={[styles.wrapper]}>
-                {icon}
-                {typeof children === 'string' ? (
-                  // tslint:disable-next-line:jsx-no-multiline-js
-                  <Text>{this.props.children}</Text>
-                ) : (
-                  children
-                )}
-              </View>
-            </TouchableWithoutFeedback>
-          )
-        }}
-      </WithTheme>
-    )
-  }
+  return <Checkbox {...props} />
 }
+
+const AntmRadio = React.forwardRef(InternalRadio)
+
+AntmRadio.displayName = 'AntmRadio'
+
+export default AntmRadio
