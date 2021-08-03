@@ -1,4 +1,5 @@
 import classNames from 'classnames'
+import useMergedState from 'rc-util/lib/hooks/useMergedState'
 import * as React from 'react'
 import {
   Animated,
@@ -50,9 +51,10 @@ const InternalCheckbox = (
     '`value` is not a valid prop, do you mean `checked`?',
   )
 
-  const [innerChecked, setInnerChecked] = React.useState<boolean>(
-    restProps.checked ?? (defaultChecked || false),
-  )
+  const [innerChecked, setInnerChecked] = useMergedState<boolean>(false, {
+    value: restProps.checked,
+    defaultValue: defaultChecked,
+  })
 
   const [animatedValue, animate] = useAnimatedTiming()
   const transitionOpacity = {
@@ -87,7 +89,7 @@ const InternalCheckbox = (
 
     if (!disabled) {
       mergedChecked = newChecked
-      setInnerChecked(mergedChecked)
+      !('checked' in restProps) && setInnerChecked(mergedChecked)
       onChange?.({
         target: {
           checked: mergedChecked,

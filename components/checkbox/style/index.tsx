@@ -54,8 +54,9 @@ export default (theme: Theme) =>
 
     // ==========checkbox Inner PrefixCls============
     checkbox_inner: {
-      width: '100%',
-      height: '100%',
+      //box-sizing not support in RN
+      width: '103%',
+      height: '103%',
       backgroundColor: theme.checkbox_fill,
     },
     checkbox_inner_indeterminate: {
