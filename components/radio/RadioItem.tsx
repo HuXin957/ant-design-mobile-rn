@@ -13,6 +13,8 @@ const ListItem = List.Item
 export interface RadioItemNativeProps
   extends RadioItemPropsType,
     WithThemeStyles<CheckboxStyle> {
+  right?: boolean
+  left?: boolean
   style?: StyleProp<ViewStyle>
   radioStyle?: StyleProp<ImageStyle>
 }
@@ -30,8 +32,14 @@ export default class RadioItem extends React.Component<
   }
 
   render() {
-    const { style, defaultChecked, checked, disabled, children, onChange } =
-      this.props
+    const {
+      style,
+      disabled,
+      children,
+      right,
+      left = !right,
+      ...restProps
+    } = this.props
 
     return (
       <WithTheme styles={this.props.styles} themeStyles={RadioItemStyles}>
@@ -54,18 +62,21 @@ export default class RadioItem extends React.Component<
           const radioEl = (
             <Radio
               ref={(ref: RefCheckboxProps) => (this.radio = ref)}
-              defaultChecked={defaultChecked}
-              checked={checked}
-              onChange={onChange}
               disabled={disabled}
+              {...restProps}
             />
           )
+
+          const listProps = {
+            thumb: left && !right ? radioEl : undefined,
+            extra: right ? radioEl : undefined,
+          }
 
           return (
             <ListItem
               style={style}
               onPress={disabled ? undefined : this.handleClick}
-              extra={radioEl}>
+              {...listProps}>
               {contentDom}
             </ListItem>
           )

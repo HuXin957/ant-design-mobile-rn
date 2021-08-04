@@ -7,9 +7,9 @@ import {
   Platform,
   Pressable,
   StyleProp,
-  TextStyle,
   TouchableNativeFeedback,
   View,
+  ViewStyle
 } from 'react-native'
 import { WithTheme, WithThemeStyles } from '../style'
 import AntmView from '../view/index'
@@ -21,7 +21,7 @@ import CheckboxStyles, { CheckboxStyle } from './style/index'
 export interface CheckboxProps
   extends CheckboxPropsType,
     WithThemeStyles<CheckboxStyle> {
-  style?: StyleProp<TextStyle>
+  style?: StyleProp<ViewStyle>
   prefixCls?: string
   children?: React.ReactNode
   indeterminate?: boolean
@@ -35,6 +35,7 @@ export interface RefCheckboxProps {
 const InternalCheckbox = (
   {
     prefixCls = 'checkbox',
+    style,
     styles,
     children,
     defaultChecked,
@@ -137,7 +138,7 @@ const InternalCheckbox = (
               ? _styles.checkbox_checked?.borderColor
               : _styles.checkbox?.borderColor
             return (
-              <View style={_styles[`${prefixCls}_wrapper`]}>
+              <View style={[_styles[`${prefixCls}_wrapper`], style]}>
                 <View style={_styles.checkbox_wave}>
                   <TouchableNativeFeedback
                     background={

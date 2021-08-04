@@ -1,4 +1,4 @@
-import React from 'react'
+import React from 'react';
 
 export interface OnChangeParams {
   target: {
@@ -9,6 +9,7 @@ export interface CheckboxPropsType {
   defaultChecked?: boolean
   checked?: boolean
   disabled?: boolean
+  value?: any
   onChange?: (_e: OnChangeParams) => void
 }
 

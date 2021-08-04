@@ -5,6 +5,7 @@ import { CheckboxStyle } from '../checkbox/style'
 import { WithTheme, WithThemeStyles } from '../style'
 import devWarning from '../_util/devWarning'
 import { RadioPropsType } from './PropsType'
+import RadioGroupContext from './RadioContext'
 import RadioStyle from './style'
 
 export interface RadioProps
@@ -15,7 +16,7 @@ export interface RadioProps
 }
 
 const InternalRadio = (
-  { styles, onChange, ...restProps }: RadioProps,
+  { styles, onChange, value, ...restProps }: RadioProps,
   ref: any,
 ) => {
   devWarning(
@@ -23,6 +24,12 @@ const InternalRadio = (
     'Radio',
     '`optionType` is only support in Radio.Group.',
   )
+
+  const context = React.useContext(RadioGroupContext)
+  if (context) {
+    restProps.checked = value === context.value
+    restProps.disabled = restProps.disabled || context.disabled
+  }
 
   const [innerChecked, setInnerChecked] = React.useState(
     restProps.checked ?? restProps.defaultChecked,
@@ -33,12 +40,13 @@ const InternalRadio = (
   }, [restProps.checked])
 
   const onInternalChange = (e: OnChangeParams) => {
-    restProps.checked ?? (e.target.checked && triggerChange(e.target.checked))
+    e.target.checked && triggerChange(e.target.checked)
   }
 
   function triggerChange(newChecked: boolean) {
     setInnerChecked(newChecked)
     onChange?.({ target: { checked: newChecked } })
+    context?.onChange?.({ target: { value } })
   }
 
   return (

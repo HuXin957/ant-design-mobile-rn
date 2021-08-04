@@ -93,6 +93,7 @@ export default (theme: Theme) =>
     // ==========label============
     checkbox_label: {
       backgroundColor: 'transparent',
+      marginRight: theme.h_spacing_md,
       marginLeft: theme.h_spacing_md,
     },
   })
