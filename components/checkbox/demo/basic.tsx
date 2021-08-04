@@ -106,9 +106,54 @@ export default class BasicCheckboxExample extends React.Component<any, any> {
         <List
           renderHeader="全选"
           renderFooter="在实现全选效果时，你可能会用到 indeterminate 属性。">
-          <List.Item thumb={<Checkbox indeterminate>Check all</Checkbox>} />
+          <CheckboxGroupExample />
         </List>
       </ScrollView>
     )
   }
+}
+
+const CheckboxGroup = Checkbox.Group
+
+const plainOptions = ['Apple', 'Pear', 'Orange']
+const defaultCheckedList = ['Apple', 'Orange']
+
+const CheckboxGroupExample = () => {
+  const [checkedList, setCheckedList] = React.useState(defaultCheckedList)
+  const [indeterminate, setIndeterminate] = React.useState(true)
+  const [checkAll, setCheckAll] = React.useState(false)
+
+  const onChange = (list: []) => {
+    setCheckedList(list)
+    setIndeterminate(!!list.length && list.length < plainOptions.length)
+    setCheckAll(list.length === plainOptions.length)
+  }
+
+  const onCheckAllChange = (e: { target: { checked: boolean } }) => {
+    setCheckedList(e.target.checked ? plainOptions : [])
+    setIndeterminate(false)
+    setCheckAll(e.target.checked)
+  }
+
+  return (
+    <>
+      <List.Item
+        thumb={
+          <Checkbox
+            indeterminate={indeterminate}
+            onChange={onCheckAllChange}
+            checked={checkAll}>
+            Check all
+          </Checkbox>
+        }
+      />
+      <List.Item>
+        <CheckboxGroup
+          options={plainOptions}
+          value={checkedList}
+          onChange={onChange}
+        />
+      </List.Item>
+    </>
+  )
 }
