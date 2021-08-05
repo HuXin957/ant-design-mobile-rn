@@ -31,20 +31,11 @@ const InternalRadio = (
     restProps.disabled = restProps.disabled || context.disabled
   }
 
-  const [innerChecked, setInnerChecked] = React.useState(
-    restProps.checked ?? restProps.defaultChecked,
-  )
-
-  React.useEffect(() => {
-    setInnerChecked(restProps.checked)
-  }, [restProps.checked])
-
   const onInternalChange = (e: OnChangeParams) => {
     e.target.checked && triggerChange(e.target.checked)
   }
 
   function triggerChange(newChecked: boolean) {
-    setInnerChecked(newChecked)
     onChange?.({ target: { checked: newChecked } })
     context?.onChange?.({ target: { value } })
   }
@@ -56,7 +47,6 @@ const InternalRadio = (
           <Checkbox
             {...restProps}
             ref={ref}
-            checked={innerChecked}
             indeterminate={false}
             onChange={onInternalChange}
             styles={_styles}

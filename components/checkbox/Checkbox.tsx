@@ -9,7 +9,7 @@ import {
   StyleProp,
   TouchableNativeFeedback,
   View,
-  ViewStyle
+  ViewStyle,
 } from 'react-native'
 import { WithTheme, WithThemeStyles } from '../style'
 import AntmView from '../view/index'

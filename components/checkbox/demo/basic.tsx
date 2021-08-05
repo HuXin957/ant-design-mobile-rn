@@ -1,6 +1,6 @@
 import React from 'react'
 import { ScrollView } from 'react-native'
-import { Button, Checkbox, Flex, List } from '../../'
+import { Button, Checkbox, Flex, List, WingBlank } from '../../'
 const AgreeItem = Checkbox.AgreeItem
 const CheckboxItem = Checkbox.CheckboxItem
 
@@ -113,8 +113,6 @@ export default class BasicCheckboxExample extends React.Component<any, any> {
   }
 }
 
-const CheckboxGroup = Checkbox.Group
-
 const plainOptions = ['Apple', 'Pear', 'Orange']
 const defaultCheckedList = ['Apple', 'Orange']
 
@@ -123,7 +121,13 @@ const CheckboxGroupExample = () => {
   const [indeterminate, setIndeterminate] = React.useState(true)
   const [checkAll, setCheckAll] = React.useState(false)
 
-  const onChange = (list: []) => {
+  const onChange = (value: any, e: { target: { checked: boolean } }) => {
+    let list = checkedList
+    if (e.target.checked) {
+      list.push(value)
+    } else {
+      list = list.filter((a) => a !== value)
+    }
     setCheckedList(list)
     setIndeterminate(!!list.length && list.length < plainOptions.length)
     setCheckAll(list.length === plainOptions.length)
@@ -147,13 +151,15 @@ const CheckboxGroupExample = () => {
           </Checkbox>
         }
       />
-      <List.Item>
-        <CheckboxGroup
-          options={plainOptions}
-          value={checkedList}
-          onChange={onChange}
-        />
-      </List.Item>
+      <WingBlank>
+        {plainOptions.map((a) => (
+          <CheckboxItem
+            onChange={onChange.bind(this, a)}
+            checked={checkedList.findIndex((pre) => pre === a) > -1}>
+            {a}
+          </CheckboxItem>
+        ))}
+      </WingBlank>
     </>
   )
 }

@@ -1,4 +1,4 @@
-import { OnChangeParams } from '../checkbox/PropsType';
+import { OnChangeParams } from '../checkbox/PropsType'
 
 export interface RadioPropsType {
   defaultChecked?: boolean
