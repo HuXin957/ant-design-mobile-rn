@@ -12,6 +12,7 @@ export interface CheckboxStyle {
   checkbox_inner_after: ViewStyle
   checkbox_inner_after_disabled: ViewStyle
   checkbox_label: ViewStyle
+  checkbox_label_disabled: ViewStyle
   checkbox_inner_indeterminate: ViewStyle
   checkbox_inner_after_indeterminate: ViewStyle
 }
@@ -95,5 +96,8 @@ export default (theme: Theme) =>
       backgroundColor: 'transparent',
       marginRight: theme.h_spacing_md,
       marginLeft: theme.h_spacing_md,
+    },
+    checkbox_label_disabled: {
+      color: theme.color_text_disabled,
     },
   })

@@ -64,7 +64,6 @@ export default class BasicRadioExample extends React.Component<any, any> {
                 this.setState({ part1Value: 1 })
               }
             }}>
-            {' '}
             Use Ant Design Component
           </RadioItem>
           <RadioItem
@@ -75,7 +74,6 @@ export default class BasicRadioExample extends React.Component<any, any> {
                 this.setState({ part1Value: 2 })
               }
             }}>
-            {' '}
             Use Ant Design Component
           </RadioItem>
         </List>

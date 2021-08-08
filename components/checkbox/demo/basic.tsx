@@ -104,8 +104,9 @@ export default class BasicCheckboxExample extends React.Component<any, any> {
           </CheckboxItem>
         </List>
         <List
-          renderHeader="全选"
-          renderFooter="在实现全选效果时，你可能会用到 indeterminate 属性。">
+          renderHeader={
+            '全选\n在实现全选效果时，你可能会用到 indeterminate 属性。'
+          }>
           <CheckboxGroupExample />
         </List>
       </ScrollView>
@@ -117,45 +118,46 @@ const plainOptions = ['Apple', 'Pear', 'Orange']
 const defaultCheckedList = ['Apple', 'Orange']
 
 const CheckboxGroupExample = () => {
-  const [checkedList, setCheckedList] = React.useState(defaultCheckedList)
+  const [checkedList, setCheckedList] = React.useState(
+    new Set(defaultCheckedList),
+  )
   const [indeterminate, setIndeterminate] = React.useState(true)
   const [checkAll, setCheckAll] = React.useState(false)
 
   const onChange = (value: any, e: { target: { checked: boolean } }) => {
-    let list = checkedList
     if (e.target.checked) {
-      list.push(value)
+      checkedList.add(value)
     } else {
-      list = list.filter((a) => a !== value)
+      checkedList.delete(value)
     }
-    setCheckedList(list)
-    setIndeterminate(!!list.length && list.length < plainOptions.length)
-    setCheckAll(list.length === plainOptions.length)
+
+    setCheckedList(new Set(checkedList))
+    setIndeterminate(
+      !!checkedList.size && checkedList.size < plainOptions.length,
+    )
+    setCheckAll(checkedList.size === plainOptions.length)
   }
 
   const onCheckAllChange = (e: { target: { checked: boolean } }) => {
-    setCheckedList(e.target.checked ? plainOptions : [])
+    setCheckedList(e.target.checked ? new Set(plainOptions) : new Set())
     setIndeterminate(false)
     setCheckAll(e.target.checked)
   }
 
   return (
     <>
-      <List.Item
-        thumb={
-          <Checkbox
-            indeterminate={indeterminate}
-            onChange={onCheckAllChange}
-            checked={checkAll}>
-            Check all
-          </Checkbox>
-        }
-      />
+      <CheckboxItem
+        indeterminate={indeterminate}
+        onChange={onCheckAllChange}
+        checked={checkAll}>
+        Check all
+      </CheckboxItem>
       <WingBlank>
         {plainOptions.map((a) => (
           <CheckboxItem
+            key={a}
             onChange={onChange.bind(this, a)}
-            checked={checkedList.findIndex((pre) => pre === a) > -1}>
+            checked={checkedList.has(a)}>
             {a}
           </CheckboxItem>
         ))}

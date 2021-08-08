@@ -16,4 +16,12 @@ export default (theme: Theme) =>
     checkbox_inner_after_disabled: {
       backgroundColor: '#0003',
     },
+    radioItemContent: {
+      color: theme.color_text_base,
+      marginRight: theme.h_spacing_md,
+      marginLeft: theme.h_spacing_md,
+    },
+    radioItemContentDisable: {
+      color: theme.color_text_disabled,
+    },
   })

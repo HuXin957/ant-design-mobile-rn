@@ -1,4 +1,5 @@
 import * as React from 'react'
+import { StyleProp, ViewStyle } from 'react-native'
 import Checkbox from '../checkbox/Checkbox'
 import { OnChangeParams } from '../checkbox/PropsType'
 import { CheckboxStyle } from '../checkbox/style'
@@ -11,7 +12,7 @@ import RadioStyle from './style'
 export interface RadioProps
   extends RadioPropsType,
     WithThemeStyles<CheckboxStyle> {
-  prefixCls?: string
+  style?: StyleProp<ViewStyle>
   children?: React.ReactNode
 }
 
@@ -19,13 +20,12 @@ const InternalRadio = (
   { styles, onChange, value, ...restProps }: RadioProps,
   ref: any,
 ) => {
-  devWarning(
-    !('optionType' in restProps),
-    'Radio',
-    '`optionType` is only support in Radio.Group.',
-  )
-
   const context = React.useContext(RadioGroupContext)
+  devWarning(
+    'checked' in restProps || !('value' in restProps && context),
+    'Radio',
+    '`value` is always used with Radio.Group., do you mean `checked`?',
+  )
   if (context) {
     restProps.checked = value === context.value
     restProps.disabled = restProps.disabled || context.disabled
@@ -42,17 +42,15 @@ const InternalRadio = (
 
   return (
     <WithTheme themeStyles={RadioStyle} styles={styles}>
-      {(_styles) => {
-        return (
-          <Checkbox
-            {...restProps}
-            ref={ref}
-            indeterminate={false}
-            onChange={onInternalChange}
-            styles={_styles}
-          />
-        )
-      }}
+      {(_styles) => (
+        <Checkbox
+          {...restProps}
+          ref={ref}
+          indeterminate={false}
+          onChange={onInternalChange}
+          styles={_styles}
+        />
+      )}
     </WithTheme>
   )
 }

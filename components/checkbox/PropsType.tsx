@@ -9,12 +9,14 @@ export interface CheckboxPropsType {
   defaultChecked?: boolean
   checked?: boolean
   disabled?: boolean
-  value?: any
   onChange?: (_e: OnChangeParams) => void
+  children?: React.ReactNode
+  indeterminate?: boolean
+  prefixCls?: string
 }
 
 export interface CheckboxItemPropsType extends CheckboxPropsType {
-  extra?: React.ReactNode
-  prefixCls?: string
-  onPress?: (_e?: any) => void
+  right?: boolean
+  left?: boolean
+  onPress?: () => void
 }

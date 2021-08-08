@@ -1,20 +1,20 @@
+import classNames from 'classnames'
 import React from 'react'
-import { StyleProp, TextStyle, ViewStyle } from 'react-native'
+import { StyleProp, ViewStyle } from 'react-native'
 import List from '../list/index'
-import { WithThemeStyles } from '../style'
+import { ListItemPropsType } from '../list/PropsType'
+import { WithTheme } from '../style'
+import View from '../view'
 import Checkbox, { RefCheckboxProps } from './Checkbox'
 import { CheckboxItemPropsType } from './PropsType'
-import { CheckboxStyle } from './style/index'
+import CheckboxStyles from './style/index'
 
 const ListItem = List.Item
 
-export interface CheckboxItemProps
-  extends CheckboxItemPropsType,
-    WithThemeStyles<CheckboxStyle> {
-  checkboxStyle?: StyleProp<TextStyle>
+interface CheckboxItemProps extends CheckboxItemPropsType, ListItemPropsType {
   style?: StyleProp<ViewStyle>
+  styles?: { [key: string]: StyleProp<ViewStyle> }
 }
-
 export default class CheckboxItem extends React.PureComponent<CheckboxItemProps> {
   checkbox: RefCheckboxProps
 
@@ -28,23 +28,50 @@ export default class CheckboxItem extends React.PureComponent<CheckboxItemProps>
   }
 
   render() {
-    const { style, disabled, children, extra, ...restProps } = this.props
+    const {
+      style,
+      disabled,
+      children,
+      right,
+      left = !right,
+      ...restProps
+    } = this.props
 
-    const thumbNode = (
-      <Checkbox
-        ref={(ref: RefCheckboxProps) => (this.checkbox = ref)}
-        disabled={disabled}
-        {...restProps}
-      />
-    )
     return (
-      <ListItem
-        style={style}
-        onPress={disabled ? undefined : this.handleClick}
-        extra={extra}
-        thumb={thumbNode}>
-        {children}
-      </ListItem>
+      <WithTheme themeStyles={CheckboxStyles} styles={restProps.styles}>
+        {(styles) => {
+          const thumbNode = (
+            <Checkbox
+              ref={(ref: RefCheckboxProps) => (this.checkbox = ref)}
+              disabled={disabled}
+              {...restProps}
+            />
+          )
+          const listProps = {
+            ...restProps,
+            thumb: left && !right ? thumbNode : undefined,
+            extra: right ? thumbNode : undefined,
+          }
+          const antd_checlbox_label = classNames(
+            `${restProps.prefixCls || 'checkbox'}_label`,
+            {
+              [`${restProps.prefixCls || 'checkbox'}_label_disabled`]: disabled,
+            },
+          )
+            .split(' ')
+            .map((a) => styles[a])
+          return (
+            <ListItem
+              style={style}
+              onPress={disabled ? undefined : this.handleClick}
+              {...listProps}>
+              <View style={antd_checlbox_label} numberOfLines={1}>
+                {children}
+              </View>
+            </ListItem>
+          )
+        }}
+      </WithTheme>
     )
   }
 }

@@ -22,11 +22,7 @@ export interface CheckboxProps
   extends CheckboxPropsType,
     WithThemeStyles<CheckboxStyle> {
   style?: StyleProp<ViewStyle>
-  prefixCls?: string
-  children?: React.ReactNode
-  indeterminate?: boolean
 }
-
 //TODO: ref interface
 export interface RefCheckboxProps {
   onPress: () => void
@@ -134,6 +130,12 @@ const InternalCheckbox = (
               .split(' ')
               .map((a) => _styles[a])
 
+            const antd_checlbox_label = classNames(`${prefixCls}_label`, {
+              [`${prefixCls}_label_disabled`]: disabled,
+            })
+              .split(' ')
+              .map((a) => _styles[a])
+
             const Color = innerChecked
               ? _styles.checkbox_checked?.borderColor
               : _styles.checkbox?.borderColor
@@ -160,9 +162,7 @@ const InternalCheckbox = (
                   </TouchableNativeFeedback>
                 </View>
                 <Pressable disabled={disabled} onPress={this.onPress}>
-                  <AntmView style={_styles[`${prefixCls}_label`]}>
-                    {children}
-                  </AntmView>
+                  <AntmView style={antd_checlbox_label}>{children}</AntmView>
                 </Pressable>
               </View>
             )
