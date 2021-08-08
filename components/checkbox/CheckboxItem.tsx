@@ -4,7 +4,7 @@ import { StyleProp, ViewStyle } from 'react-native'
 import List from '../list/index'
 import { ListItemPropsType } from '../list/PropsType'
 import { WithTheme } from '../style'
-import View from '../view'
+import Text from '../text'
 import Checkbox, { RefCheckboxProps } from './Checkbox'
 import { CheckboxItemPropsType } from './PropsType'
 import CheckboxStyles from './style/index'
@@ -65,9 +65,9 @@ export default class CheckboxItem extends React.PureComponent<CheckboxItemProps>
               style={style}
               onPress={disabled ? undefined : this.handleClick}
               {...listProps}>
-              <View style={antd_checlbox_label} numberOfLines={1}>
+              <Text style={antd_checlbox_label} numberOfLines={1}>
                 {children}
-              </View>
+              </Text>
             </ListItem>
           )
         }}
